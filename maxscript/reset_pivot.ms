@@ -1,3 +1,8 @@
+-- reset_pivot.ms
+-- Resets pivot to bounding box center for all selected objects
+-- Author: LAZARUS-inq
+-- Part of TA learning journey
+
 selectedObjects = getCurrentSelection()
 
 if selectedObjects.count == 0 then
