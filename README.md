@@ -52,7 +52,7 @@ ta-journey/
 
 ### Month 1 — Scripting & 3D Foundation
 - [x] rename_objects.ms — batch rename selected objects
-- [ ] reset_pivot.ms — reset pivot to bounding box center
+- [x] reset_pivot.ms — reset pivot to bounding box center
 - [ ] batch_export.ms — FBX batch export with validation
 - [ ] Python basics
 
