@@ -1,3 +1,8 @@
+-- rename_objects.ms
+-- Renames all selected objects to SM_Object_001 format
+-- Author: LAZARUS-inq
+-- Part of TA learning journey
+
 selectionList = getCurrentSelection()
 
 if selectionList.count == 0 then
