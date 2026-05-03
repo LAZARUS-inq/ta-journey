@@ -57,6 +57,7 @@ ta-journey/
 - [x] Python basics — functions, loops, validation, JSON, os
 - [x] rename_pipeline.py — asset validation + rename pipeline
 - [x] asset_manager.py — AssetManager class, scan/fix/report pipeline
+- [x] maxscript_pipeline.py — pymxs API, rename + JSON report inside 3ds Max
 
 ### Month 2 — Unreal Engine 5
 - [ ] 3ds Max → FBX → UE5 pipeline
