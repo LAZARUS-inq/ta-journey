@@ -54,7 +54,8 @@ ta-journey/
 - [x] rename_objects.ms — batch rename selected objects
 - [x] reset_pivot.ms — reset pivot to bounding box center
 - [x] batch_export.ms — FBX batch export with validation
-- [ ] Python basics
+- [x] Python basics — functions, loops, validation, pipeline
+- [x] rename_pipeline.py — asset validation + rename pipeline
 
 ### Month 2 — Unreal Engine 5
 - [ ] 3ds Max → FBX → UE5 pipeline
