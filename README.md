@@ -55,6 +55,7 @@ ta-journey/
 - [x] reset_pivot.ms — reset pivot to bounding box center
 - [x] batch_export.ms — FBX batch export with validation
 - [x] rename_pipeline.py — full asset pipeline with JSON report
+- [x] asset_manager.py — scan, validate, fix and report assets
 - [x] Python basics — functions, loops, validation, JSON, os
 
 ### Month 2 — Unreal Engine 5
