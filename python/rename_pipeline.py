@@ -2,6 +2,8 @@
 # Asset naming pipeline — validates and renames objects to studio standard
 # Author: LAZARUS-inq
 # Part of TA learning journey
+import json
+import os
 
 def validate_objects(objects):
     if len(objects) == 0:
@@ -32,10 +34,24 @@ def run_pipeline(objects, prefix="SM"):
         print("Pipeline stopped.")
         return
     print("--- Renaming ---")
-    rename_objects(objects, prefix)
+    renamed = rename_objects(objects, prefix)
+    print("--- Saving Report ---")
+    save_report(objects, prefix, filename="E:\\PythonScripts\\report.json")
     print("--- Done ---")
+    return renamed
 
-# Тесты
+def save_report(objects, prefix="SM", filename="report.json"):
+    renamed = [f"{prefix}_{name}_{i+1:03d}" for i, name in enumerate(objects)]
+    
+    report = {
+        "total": len(objects),
+        "prefix": prefix,
+        "objects": renamed
+    }
+    
+    with open(filename, "w") as f:
+        json.dump(report, f, indent=4)
+    
+    print(f"Report saved to: {os.path.abspath(filename)}")
+
 run_pipeline(["Box", "Sphere", "Cone"])
-run_pipeline(["Box", "Box"])
-run_pipeline([])
