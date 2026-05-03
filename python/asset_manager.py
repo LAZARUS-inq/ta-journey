@@ -7,7 +7,7 @@ import os
 import json
 
 
-# ── VALIDATION ──────────────────────────────────────────────────────────────
+# ── VALIDATION ───────────────────────────────────────────────────────────────
 
 def validate_objects(objects):
     """Check that a list of object names is valid before processing."""
@@ -25,7 +25,7 @@ def validate_objects(objects):
     return True
 
 
-# ── RENAMING ─────────────────────────────────────────────────────────────────
+# ── RENAMING ──────────────────────────────────────────────────────────────────
 
 def rename_objects(objects, prefix="SM"):
     """Rename a list of objects to studio naming standard (e.g. SM_Box_001)."""
@@ -38,25 +38,18 @@ def rename_objects(objects, prefix="SM"):
     return result
 
 
-# ── REPORTING ────────────────────────────────────────────────────────────────
-
 def save_report(objects, prefix="SM", filename="report.json"):
     """Save renamed asset list to a JSON report file."""
     renamed = [f"{prefix}_{name}_{i+1:03d}" for i, name in enumerate(objects)]
-
     report = {
         "total": len(objects),
         "prefix": prefix,
         "objects": renamed
     }
-
     with open(filename, "w") as f:
         json.dump(report, f, indent=4)
-
     print(f"Report saved to: {os.path.abspath(filename)}")
 
-
-# ── PIPELINE ─────────────────────────────────────────────────────────────────
 
 def run_pipeline(objects, prefix="SM", report_path="report.json"):
     """Run full pipeline: validate → rename → save report."""
@@ -64,66 +57,84 @@ def run_pipeline(objects, prefix="SM", report_path="report.json"):
     if not validate_objects(objects):
         print("Pipeline stopped.")
         return None
-
     print("--- Renaming ---")
     renamed = rename_objects(objects, prefix)
-
     print("--- Saving Report ---")
     save_report(objects, prefix, filename=report_path)
-
     print("--- Done ---")
     return renamed
 
 
-# ── FILE SYSTEM ──────────────────────────────────────────────────────────────
+# ── ASSET MANAGER CLASS ───────────────────────────────────────────────────────
 
-def scan_assets(folder):
-    """Scan a folder for FBX files and split into valid/invalid by naming convention."""
-    valid = []
-    invalid = []
+class AssetManager:
+    """Manages FBX assets in a folder — scan, fix naming, and report."""
 
-    for root, dirs, files in os.walk(folder):
-        for file in files:
-            if file.endswith(".fbx"):
-                name = os.path.splitext(file)[0]
-                if name.startswith("SM_") or name.startswith("ENV_"):
-                    valid.append(file)
-                else:
-                    invalid.append(file)
+    def __init__(self, folder, prefix="SM"):
+        self.folder = folder
+        self.prefix = prefix
+        self.valid = []
+        self.invalid = []
 
-    print(f"\n--- Scan Results: {folder} ---")
-    print(f"Valid ({len(valid)}):")
-    for f in valid:
-        print(f"  ✓ {f}")
-    print(f"Invalid ({len(invalid)}):")
-    for f in invalid:
-        print(f"  ✗ {f}")
+    def scan(self):
+        """Scan folder for FBX files and split into valid/invalid by naming convention."""
+        self.valid = []
+        self.invalid = []
 
-    return valid, invalid
+        for root, dirs, files in os.walk(self.folder):
+            for file in files:
+                if file.endswith(".fbx"):
+                    name = os.path.splitext(file)[0]
+                    if name.startswith("SM_") or name.startswith("ENV_"):
+                        self.valid.append(file)
+                    else:
+                        self.invalid.append(file)
+
+        print(f"\n--- Scan Results: {self.folder} ---")
+        print(f"Valid   ({len(self.valid)}):   {self.valid}")
+        print(f"Invalid ({len(self.invalid)}): {self.invalid}")
+
+    def fix(self):
+        """Rename invalid FBX files to studio naming standard."""
+        if not self.invalid:
+            print("Nothing to fix.")
+            return
+
+        print("\n--- Fixing Invalid Assets ---")
+        for i, file in enumerate(self.invalid):
+            old_path = os.path.join(self.folder, file)
+            name = os.path.splitext(file)[0]
+            new_name = f"{self.prefix}_{name}_{i+1:03d}.fbx"
+            new_path = os.path.join(self.folder, new_name)
+            os.rename(old_path, new_path)
+            print(f"Renamed: {file} → {new_name}")
+
+        print(f"Fixed: {len(self.invalid)} files renamed.")
+        self.scan()
+
+    def report(self, filename="asset_report.json"):
+        """Save scan results to a JSON report file."""
+        report = {
+            "folder": self.folder,
+            "total": len(self.valid) + len(self.invalid),
+            "valid_count": len(self.valid),
+            "invalid_count": len(self.invalid),
+            "valid": self.valid,
+            "invalid": self.invalid
+        }
+        with open(filename, "w") as f:
+            json.dump(report, f, indent=4)
+        print(f"Report saved to: {os.path.abspath(filename)}")
 
 
-def fix_assets(folder):
-    """Rename invalid FBX files in a folder to studio naming standard."""
-    valid, invalid = scan_assets(folder)
-
-    print("\n--- Fixing Invalid Assets ---")
-    for i, file in enumerate(invalid):
-        old_path = os.path.join(folder, file)
-        name = os.path.splitext(file)[0]
-        new_name = f"SM_{name}_{i+1:03d}.fbx"
-        new_path = os.path.join(folder, new_name)
-        os.rename(old_path, new_path)
-        print(f"Renamed: {file} → {new_name}")
-
-    print(f"Fixed: {len(invalid)} files renamed.")
-
-
-# ── ENTRY POINT ──────────────────────────────────────────────────────────────
+# ── ENTRY POINT ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     # Pipeline test
     run_pipeline(["Box", "Sphere", "Cone"])
 
     # File system test — change path to your assets folder
-    # scan_assets("E:\\TestAssets")
-    # fix_assets("E:\\TestAssets")
+    manager = AssetManager("E:\\TestAssets")
+    manager.scan()
+    manager.fix()
+    manager.report()
