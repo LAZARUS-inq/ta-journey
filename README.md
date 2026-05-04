@@ -76,9 +76,9 @@ ta-journey/
 - [x] `maxscript_pipeline.py` — pymxs API, rename + JSON report inside 3ds Max
 
 ### Month 2 — Unreal Engine 5
+- [x] First PBR material (Stone with Normal + Roughness + AO)
+- [x] Material Editor fundamentals
 - [ ] 3ds Max → FBX → UE5 pipeline
-- [ ] First PBR material (Stone with Normal + Roughness + AO)
-- [ ] Material Editor fundamentals
 
 ### Month 3 — Shaders
 - [ ] Procedural rock shader (no textures)
