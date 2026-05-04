@@ -78,6 +78,7 @@ ta-journey/
 ### Month 2 — Unreal Engine 5
 - [x] Material Editor fundamentals
 - [x] First procedural rock material (Noise + Lerp, no textures)
+- [x] Hologram shader — Fresnel + Panner + Sine animation
 - [ ] 3ds Max → FBX → UE5 pipeline
 
 ### Month 3 — Shaders
