@@ -79,6 +79,7 @@ ta-journey/
 - [x] Material Editor fundamentals
 - [x] First procedural rock material (Noise + Lerp, no textures)
 - [x] Hologram shader — Fresnel + Panner + Sine animation
+- [x] Water shader — dual Panner + Sine waves + Fresnel
 - [ ] 3ds Max → FBX → UE5 pipeline
 
 ### Month 3 — Shaders
