@@ -81,6 +81,7 @@ ta-journey/
 - [x] Hologram shader — Fresnel + Panner + Sine animation
 - [x] Water shader — dual Panner + Sine waves + Fresnel
 - [x] Fire Dissolve shader — Noise + Emissive glow + Blueprint animation
+- [x] Magic VFX — Niagara particle system with custom material
 - [ ] 3ds Max → FBX → UE5 pipeline
 
 ### Month 3 — Shaders
