@@ -38,6 +38,17 @@ ta-journey/
 
 ---
 
+## 🎨 Portfolio
+
+| Project | Description | Link |
+|---|---|---|
+| Hologram Shader | Fresnel + Panner + Sine animation — UE5 | [ArtStation](https://www.artstation.com/artwork/qJqm3N) |
+| Water Shader | Dual Panner + Sine waves + Fresnel — UE5 | [ArtStation](https://www.artstation.com/artwork/y4dVL3) |
+| Fire Dissolve Shader | Noise + Emissive glow + Blueprint animation — UE5 | [ArtStation](https://www.artstation.com/artwork/2BA2rY) |
+| Magic VFX | Niagara particle system with custom material — UE5 | [ArtStation](https://www.artstation.com/artwork/V2wz15) |
+
+---
+
 ## 🎓 Certifications
 
 | Certificate | Institution | Date |
@@ -75,19 +86,13 @@ ta-journey/
 - [x] `asset_manager.py` — AssetManager class, scan/fix/report pipeline
 - [x] `maxscript_pipeline.py` — pymxs API, rename + JSON report inside 3ds Max
 
-### Month 2 — Unreal Engine 5
+### Month 2 & 3 — Unreal Engine 5 & Shaders
 - [x] Material Editor fundamentals
-- [x] First procedural rock material (Noise + Lerp, no textures)
 - [x] Hologram shader — Fresnel + Panner + Sine animation
 - [x] Water shader — dual Panner + Sine waves + Fresnel
 - [x] Fire Dissolve shader — Noise + Emissive glow + Blueprint animation
 - [x] Magic VFX — Niagara particle system with custom material
-- [ ] 3ds Max → FBX → UE5 pipeline
-
-### Month 3 — Shaders
-- [ ] Procedural rock shader (no textures)
-- [ ] Hologram / glow effect
-- [ ] Simple water with wave motion
+- [x] 3ds Max → FBX → UE5 pipeline
 
 ### Month 4 — Optimization
 - [ ] LOD setup in UE5
@@ -95,8 +100,7 @@ ta-journey/
 - [ ] Python automation script
 
 ### Month 5 — Portfolio & Jobs
-- [ ] VFX effect in Niagara
-- [ ] ArtStation profile with 4+ projects
+- [x] ArtStation profile with 4+ projects
 - [ ] First job applications
 
 ---
@@ -105,5 +109,6 @@ ta-journey/
 
 **LAZARUS-inq**
 - GitHub: [@LAZARUS-inq](https://github.com/LAZARUS-inq)
-- Background: C++ / C# / 3ds Max / Cybersecurity basics / Unreal Engine 5
+- ArtStation: [artstation.com/lazarus-inq](https://www.artstation.com/lazarus-inq)
+- Background: C++ / C# / 3ds Max / Python / Unreal Engine 5
 - Goal: Junior Technical Artist at a game studio
