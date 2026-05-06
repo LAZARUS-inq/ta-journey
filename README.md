@@ -46,6 +46,7 @@ ta-journey/
 | Water Shader | Dual Panner + Sine waves + Fresnel — UE5 | [ArtStation](https://www.artstation.com/artwork/y4dVL3) |
 | Fire Dissolve Shader | Noise + Emissive glow + Blueprint animation — UE5 | [ArtStation](https://www.artstation.com/artwork/2BA2rY) |
 | Magic VFX | Niagara particle system with custom material — UE5 | [ArtStation](https://www.artstation.com/artwork/V2wz15) |
+| LOD & ISM Optimization | LOD system + Instanced Static Mesh — UE5 | [ArtStation](https://www.artstation.com/artwork/lGJkwO) |
 
 ---
 
@@ -95,12 +96,14 @@ ta-journey/
 - [x] 3ds Max → FBX → UE5 pipeline
 
 ### Month 4 — Optimization
-- [ ] LOD setup in UE5
-- [ ] Profiling with Unreal Insights (before/after FPS)
+- [x] LOD setup in UE5 — 4 levels, 2x polygon reduction per level
+- [x] Mesh LOD Coloration — viewport visualization of LOD distances
+- [x] ISM optimization — 858 → 373 Draw Calls (-57%), 50.8K → 7952 Prims (-85%)
+- [ ] Profiling with Unreal Insights
 - [ ] Python automation script
 
 ### Month 5 — Portfolio & Jobs
-- [x] ArtStation profile with 4+ projects
+- [x] ArtStation profile with 5+ projects
 - [ ] First job applications
 
 ---
