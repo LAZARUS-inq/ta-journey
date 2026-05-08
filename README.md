@@ -50,6 +50,7 @@ ta-journey/
 | LOD & ISM Optimization | LOD system + Instanced Static Mesh — UE5 | [ArtStation](https://www.artstation.com/artwork/lGJkwO) |
 | Snow Accumulation Shader | World Aligned Blend + Niagara VFX — UE5 | [ArtStation](https://www.artstation.com/artwork/kNgqB6) |
 | UE5 Python Texture Checker | Texture naming validator + auto-rename pipeline tool | [ArtStation](https://www.artstation.com/artwork/zxbdPw) |
+| Wet Surface Shader | Fresnel + Ripples + Puddles + Niagara Rain — UE5 | [ArtStation](https://www.artstation.com/artwork/L4LAkK) |
 
 ---
 
@@ -105,10 +106,11 @@ ta-journey/
 - [x] Snow Accumulation shader — World Aligned Blend + MPC animation
 - [x] Niagara snowfall VFX — custom particle system built from scratch
 - [x] `texture_checker.py` — UE5 Python naming validator + auto-fix + JSON report
+- [x] Wet Surface shader — Fresnel + Ripples + Puddles + Niagara Rain
 - [ ] Profiling with Unreal Insights
 
 ### Month 5 — Portfolio & Jobs
-- [x] ArtStation profile with 7+ projects
+- [x] ArtStation profile with 8+ projects
 - [ ] First job applications
 
 ---
