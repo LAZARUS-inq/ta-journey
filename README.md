@@ -35,6 +35,7 @@ ta-journey/
 | `rename_pipeline.py` | Asset validation + rename pipeline with JSON report |
 | `asset_manager.py` | AssetManager class — scan, fix, report pipeline |
 | `maxscript_pipeline.py` | pymxs API — rename + JSON report inside 3ds Max |
+| `texture_checker.py` | UE5 Python — texture naming validator + auto-rename with JSON report |
 
 ---
 
@@ -48,6 +49,7 @@ ta-journey/
 | Magic VFX | Niagara particle system with custom material — UE5 | [ArtStation](https://www.artstation.com/artwork/V2wz15) |
 | LOD & ISM Optimization | LOD system + Instanced Static Mesh — UE5 | [ArtStation](https://www.artstation.com/artwork/lGJkwO) |
 | Snow Accumulation Shader | World Aligned Blend + Niagara VFX — UE5 | [ArtStation](https://www.artstation.com/artwork/kNgqB6) |
+| UE5 Python Texture Checker | Texture naming validator + auto-rename pipeline tool | [ArtStation](ссылка) |
 
 ---
 
@@ -102,11 +104,11 @@ ta-journey/
 - [x] ISM optimization — 858 → 373 Draw Calls (-57%), 50.8K → 7952 Prims (-85%)
 - [x] Snow Accumulation shader — World Aligned Blend + MPC animation
 - [x] Niagara snowfall VFX — custom particle system built from scratch
+- [x] `texture_checker.py` — UE5 Python naming validator + auto-fix + JSON report
 - [ ] Profiling with Unreal Insights
-- [ ] Python automation script
 
 ### Month 5 — Portfolio & Jobs
-- [x] ArtStation profile with 6+ projects
+- [x] ArtStation profile with 7+ projects
 - [ ] First job applications
 
 ---
