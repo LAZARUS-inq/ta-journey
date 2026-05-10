@@ -36,6 +36,7 @@ ta-journey/
 | `asset_manager.py` | AssetManager class — scan, fix, report pipeline |
 | `maxscript_pipeline.py` | pymxs API — rename + JSON report inside 3ds Max |
 | `texture_checker.py` | UE5 Python — texture naming validator + auto-rename with JSON report |
+| `material_audit.py` | UE5 Python — full material audit: broken textures, naming violations, duplicates + JSON report |
 
 ---
 
@@ -51,6 +52,7 @@ ta-journey/
 | Snow Accumulation Shader | World Aligned Blend + Niagara VFX — UE5 | [ArtStation](https://www.artstation.com/artwork/kNgqB6) |
 | UE5 Python Texture Checker | Texture naming validator + auto-rename pipeline tool | [ArtStation](https://www.artstation.com/artwork/zxbdPw) |
 | Wet Surface Shader | Fresnel + Ripples + Puddles + Niagara Rain — UE5 | [ArtStation](https://www.artstation.com/artwork/L4LAkK) |
+| UE5 Material Audit Tool | Full material audit — broken textures, naming violations, duplicates + JSON report | [ArtStation](https://www.artstation.com/artwork/lGg1YV) |
 
 ---
 
@@ -109,8 +111,13 @@ ta-journey/
 - [x] Wet Surface shader — Fresnel + Ripples + Puddles + Niagara Rain
 - [ ] Profiling with Unreal Insights
 
-### Month 5 — Portfolio & Jobs
-- [x] ArtStation profile with 8+ projects
+### Month 5 — Pipeline Tools & Portfolio
+- [x] `material_audit.py` — UE5 Python full material audit tool (AssetRegistry + MaterialEditingLibrary)
+- [x] ArtStation profile with 9+ projects
+- [ ] Mesh Validator — MAXScript + Python pre-import asset validation
+- [ ] Asset Dependency Checker — UE5 Python dependency graph via AssetRegistry
+- [ ] Decal System — dirt, damage and surface detail shaders
+- [ ] Destruction Material — cracks and damage effects
 - [ ] First job applications
 
 ---
