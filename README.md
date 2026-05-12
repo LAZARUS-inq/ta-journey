@@ -53,6 +53,7 @@ ta-journey/
 | UE5 Python Texture Checker | Texture naming validator + auto-rename pipeline tool | [ArtStation](https://www.artstation.com/artwork/zxbdPw) |
 | Wet Surface Shader | Fresnel + Ripples + Puddles + Niagara Rain — UE5 | [ArtStation](https://www.artstation.com/artwork/L4LAkK) |
 | UE5 Material Audit Tool | Full material audit — broken textures, naming violations, duplicates + JSON report | [ArtStation](https://www.artstation.com/artwork/lGg1YV) |
+| Decal System | Dirt, damage and wetness deferred decals with animated drying cycle — UE5 | [ArtStation](https://www.artstation.com/artwork/Ezra32) |
 
 ---
 
@@ -113,10 +114,10 @@ ta-journey/
 
 ### Month 5 — Pipeline Tools & Portfolio
 - [x] `material_audit.py` — UE5 Python full material audit tool (AssetRegistry + MaterialEditingLibrary)
-- [x] ArtStation profile with 9+ projects
+- [x] Decal System — Dirt, Damage, Wetness deferred decals with Fresnel, Normal maps, animated drying cycle + Blueprint Timeline
+- [x] ArtStation profile with 10+ projects
 - [ ] Mesh Validator — MAXScript + Python pre-import asset validation
 - [ ] Asset Dependency Checker — UE5 Python dependency graph via AssetRegistry
-- [ ] Decal System — dirt, damage and surface detail shaders
 - [ ] Destruction Material — cracks and damage effects
 - [ ] First job applications
 
