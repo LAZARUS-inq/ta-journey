@@ -37,6 +37,8 @@ ta-journey/
 | `maxscript_pipeline.py` | pymxs API — rename + JSON report inside 3ds Max |
 | `texture_checker.py` | UE5 Python — texture naming validator + auto-rename with JSON report |
 | `material_audit.py` | UE5 Python — full material audit: broken textures, naming violations, duplicates + JSON report |
+| `mesh_validator.ms` | 3ds Max MAXScript — pre-export mesh validator: naming, pivot, scale, UV, modifiers, polycount + Dry Run / Fix Mode |
+| `mesh_validator.py` | UE5 Python — post-import mesh validator: naming, LOD, lightmap UV, collision, triangles, Nanite + JSON report |
 
 ---
 
@@ -54,6 +56,7 @@ ta-journey/
 | Wet Surface Shader | Fresnel + Ripples + Puddles + Niagara Rain — UE5 | [ArtStation](https://www.artstation.com/artwork/L4LAkK) |
 | UE5 Material Audit Tool | Full material audit — broken textures, naming violations, duplicates + JSON report | [ArtStation](https://www.artstation.com/artwork/lGg1YV) |
 | Decal System | Dirt, damage and wetness deferred decals with animated drying cycle — UE5 | [ArtStation](https://www.artstation.com/artwork/Ezra32) |
+| Mesh Validator | Two-stage pipeline tool — 3ds Max pre-export + UE5 post-import validation | [ArtStation](https://www.artstation.com/artwork/x3ld8r) |
 
 ---
 
@@ -115,8 +118,8 @@ ta-journey/
 ### Month 5 — Pipeline Tools & Portfolio
 - [x] `material_audit.py` — UE5 Python full material audit tool (AssetRegistry + MaterialEditingLibrary)
 - [x] Decal System — Dirt, Damage, Wetness deferred decals with Fresnel, Normal maps, animated drying cycle + Blueprint Timeline
-- [x] ArtStation profile with 10+ projects
-- [ ] Mesh Validator — MAXScript + Python pre-import asset validation
+- [x] `mesh_validator.ms` + `mesh_validator.py` — two-stage mesh validation pipeline (3ds Max + UE5)
+- [x] ArtStation profile with 11+ projects
 - [ ] Asset Dependency Checker — UE5 Python dependency graph via AssetRegistry
 - [ ] Destruction Material — cracks and damage effects
 - [ ] First job applications
