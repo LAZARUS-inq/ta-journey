@@ -1,48 +1,69 @@
-# ta-journey 🎮
+# ta-journey
 
-My personal learning path to becoming a **Junior Technical Artist** in the game industry.
+Personal learning path toward a **Junior Technical Artist** role in games.
 
-This repository contains all tools, scripts, shaders, and notes created during my TA training.
+This repository is a public journal of pipeline tools, MAXScript, Unreal Python, and shader experiments built during TA training. Shader *source* lives in Unreal Engine 5; this repo keeps the scripts plus preview GIFs.
 
-> **Stack:** 3ds Max · Unreal Engine 5 · MAXScript · Python · HLSL
+> **Stack:** 3ds Max · Unreal Engine 5 · MAXScript · Python · HLSL (Material Editor)
 
 ---
 
-## 📁 Structure
+## Structure
 
 ```
 ta-journey/
 ├── maxscript/        # Automation tools for 3ds Max
-├── shaders/          # HLSL / GLSL shader experiments
-├── python/           # Pipeline automation scripts
-└── notes/            # Book notes & learning references
+├── python/           # Pipeline scripts (vanilla Python, pymxs, UE5)
+├── shaders/          # Preview GIFs of UE5 materials / Niagara / LOD
+└── reports/          # JSON/TXT reports (created at runtime, gitignored)
 ```
 
 ---
 
-## 🛠️ Tools & Scripts
+## Shader previews
 
-### MAXScript
-| Script | Description |
-|---|---|
-| `rename_objects.ms` | Renames selected objects to `SM_Object_001` format |
-| `reset_pivot.ms` | Resets pivot to center of bounding box |
-| `batch_export.ms` | Batch FBX export with validation |
+Procedural materials and VFX built in UE5. Full breakdowns are on [ArtStation](https://www.artstation.com/lazarus-inq).
 
-### Python
-| Script | Description |
-|---|---|
-| `rename_pipeline.py` | Asset validation + rename pipeline with JSON report |
-| `asset_manager.py` | AssetManager class — scan, fix, report pipeline |
-| `maxscript_pipeline.py` | pymxs API — rename + JSON report inside 3ds Max |
-| `texture_checker.py` | UE5 Python — texture naming validator + auto-rename with JSON report |
-| `material_audit.py` | UE5 Python — full material audit: broken textures, naming violations, duplicates + JSON report |
-| `mesh_validator.ms` | 3ds Max MAXScript — pre-export mesh validator: naming, pivot, scale, UV, modifiers, polycount + Dry Run / Fix Mode |
-| `mesh_validator.py` | UE5 Python — post-import mesh validator: naming, LOD, lightmap UV, collision, triangles, Nanite + JSON report |
+| Hologram | Niagara VFX | Water |
+|---|---|---|
+| ![Hologram shader](shaders/M_Hologram_preview.gif) | ![Niagara VFX](shaders/NIAGARA.gif) | ![Water shader](shaders/M_Water_S.gif) |
+
+More clips in [`shaders/`](shaders/): dissolve, LOD visualization, additional Niagara angles.
 
 ---
 
-## 🎨 Portfolio
+## Tools & Scripts
+
+### MAXScript — run in 3ds Max via *Scripting → Run Script*
+
+| Script | Description |
+|---|---|
+| `rename_objects.ms` | Renames selected objects to `SM_<Name>_001` |
+| `reset_pivot.ms` | Resets pivot to bounding-box center (`CenterPivot`) |
+| `batch_export.ms` | Batch FBX export of selected objects (asks for a folder) |
+| `mesh_validator.ms` | Pre-export mesh validator: naming, pivot, scale, UV, modifiers, polycount. Default **dry run**; set `MODE = "fix"` to auto-fix |
+
+### Python — vanilla / pymxs / UE5
+
+| Script | Environment | Description |
+|---|---|---|
+| `rename_pipeline.py` | Any Python 3 | Asset validation + rename pipeline with JSON report |
+| `asset_manager.py` | Any Python 3 | `AssetManager` — scan a folder of FBX files, fix names, report |
+| `maxscript_pipeline.py` | 3ds Max (`pymxs`) | Rename selected objects + JSON report inside Max |
+| `texture_checker.py` | UE5 Editor | Texture2D naming validator (`T_` prefix + common suffixes) + optional rename |
+| `material_audit.py` | UE5 Editor | Material audit: broken textures, empty materials, naming, duplicates |
+| `mesh_validator.py` | UE5 Editor | Post-import StaticMesh validator: naming, LOD, lightmap UV, collision, tris, Nanite |
+
+UE5 scripts: **Tools → Execute Python Script**.  
+Reports are written to `reports/` next to the repo (created automatically).
+
+Vanilla Python checks (no Max / UE5): `python tests/test_tools.py`
+
+Dry-run is the default wherever a script can rename or modify assets. Flip the `DRY_RUN` / `MODE` / `FIX_NAMING` flag at the top of the file only after you have read the report.
+
+---
+
+## Portfolio
 
 | Project | Description | Link |
 |---|---|---|
@@ -61,7 +82,7 @@ ta-journey/
 
 ---
 
-## 🎓 Certifications
+## Certifications
 
 | Certificate | Institution | Date |
 |---|---|---|
@@ -70,7 +91,7 @@ ta-journey/
 
 ---
 
-## 📚 Learning Resources
+## Learning Resources
 
 ### Books
 - **The Art of Game Design** — Jesse Schell
@@ -87,7 +108,7 @@ ta-journey/
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### Month 1 — Scripting & 3D Foundation
 - [x] `rename_objects.ms` — batch rename selected objects
@@ -127,7 +148,7 @@ ta-journey/
 
 ---
 
-## 👤 Author
+## Author
 
 **LAZARUS-inq**
 - GitHub: [@LAZARUS-inq](https://github.com/LAZARUS-inq)

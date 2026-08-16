@@ -48,8 +48,9 @@ from collections import defaultdict
 # ─── Settings ─────────────────────────────────────────────────────────────────
 
 SCAN_PATH   = "/Game"           # Root scan path; narrow to "/Game/Materials" for speed
-REPORT_PATH = "C:/UE5_Reports"  # Output folder for JSON report; created if missing
 FIX_NAMING  = False             # True = auto-rename naming violations; False = report only
+SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
+REPORT_PATH = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "reports"))
 
 # Naming convention: Materials must start with "M_", Instances with "MI_"
 MATERIAL_PREFIX  = "M_"
@@ -291,13 +292,16 @@ def run_audit(scan_path: str, fix_naming_flag: bool) -> dict:
             })
             log_error(f"Broken textures in {name}: {tex['broken']}")
 
-        if tex["empty"]:
+        excluded_empty = any(name.startswith(ex) for ex in EXCLUDE_EMPTY_CHECK)
+        if tex["empty"] and not excluded_empty:
             report["empty_materials"].append({
                 "name": name,
                 "path": str(asset_data.package_name),
                 "type": "Material",
             })
             log_warning(f"Material has no textures: {name}")
+        elif tex["empty"] and excluded_empty:
+            log(f"Skip empty-texture check (procedural): {name}")
 
     # ── Scan MaterialInstance ─────────────────────────────────────────────────
     for asset_data in all_assets["instances"]:

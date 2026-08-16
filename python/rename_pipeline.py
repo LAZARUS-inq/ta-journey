@@ -2,8 +2,13 @@
 # Asset naming pipeline — validates and renames objects to studio standard
 # Author: LAZARUS-inq
 # Part of TA learning journey
+
 import json
 import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_REPORT = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "reports", "report.json"))
+
 
 def validate_objects(objects):
     if len(objects) == 0:
@@ -13,11 +18,12 @@ def validate_objects(objects):
         print("ERROR: Duplicate names found.")
         return False
     for i, obj in enumerate(objects):
-        if not isinstance(obj, str):
+        if not isinstance(obj, str) or not obj.strip():
             print(f"ERROR: Invalid name at index {i}.")
             return False
     print(f"OK: {len(objects)} objects validated.")
     return True
+
 
 def rename_objects(objects, prefix="SM"):
     result = []
@@ -28,30 +34,32 @@ def rename_objects(objects, prefix="SM"):
     print(f"Total: {len(objects)}")
     return result
 
-def run_pipeline(objects, prefix="SM"):
-    print("--- Validating ---")
-    if not validate_objects(objects):
-        print("Pipeline stopped.")
-        return
-    print("--- Renaming ---")
-    renamed = rename_objects(objects, prefix)
-    print("--- Saving Report ---")
-    save_report(objects, prefix, filename="E:\\PythonScripts\\report.json")
-    print("--- Done ---")
-    return renamed
 
-def save_report(objects, prefix="SM", filename="report.json"):
+def save_report(objects, prefix="SM", filename=DEFAULT_REPORT):
     renamed = [f"{prefix}_{name}_{i+1:03d}" for i, name in enumerate(objects)]
-    
     report = {
         "total": len(objects),
         "prefix": prefix,
-        "objects": renamed
+        "objects": renamed,
     }
-    
-    with open(filename, "w") as f:
+    os.makedirs(os.path.dirname(filename) or ".", exist_ok=True)
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=4)
-    
     print(f"Report saved to: {os.path.abspath(filename)}")
 
-run_pipeline(["Box", "Sphere", "Cone"])
+
+def run_pipeline(objects, prefix="SM", report_path=DEFAULT_REPORT):
+    print("--- Validating ---")
+    if not validate_objects(objects):
+        print("Pipeline stopped.")
+        return None
+    print("--- Renaming ---")
+    renamed = rename_objects(objects, prefix)
+    print("--- Saving Report ---")
+    save_report(objects, prefix, filename=report_path)
+    print("--- Done ---")
+    return renamed
+
+
+if __name__ == "__main__":
+    run_pipeline(["Box", "Sphere", "Cone"])
