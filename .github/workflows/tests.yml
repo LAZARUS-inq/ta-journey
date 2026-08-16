@@ -14,4 +14,4 @@ jobs:
         with:
           python-version: "3.11"
       - name: Run vanilla Python tool tests
-        run: python tests/test_tools.py
+        run: python -m unittest discover -s tests -v

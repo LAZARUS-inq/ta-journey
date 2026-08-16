@@ -39,6 +39,8 @@
 global MODE           = "dry"      -- "dry" = report only | "fix" = auto-fix
 global MAX_TRIS       = 50000
 global CHECK_SELECTED = true
+global TA_VALIDATOR_AUTORUN
+if TA_VALIDATOR_AUTORUN == undefined then TA_VALIDATOR_AUTORUN = true
 
 scriptFile = getThisScriptFilename()
 if scriptFile == undefined or scriptFile == "" then scriptFile = getSourceFileName()
@@ -284,4 +286,4 @@ fn runValidator = (
 )
 
 -- ─── Run ───────────────────────────────────────────────────────────────────────
-runValidator()
+if TA_VALIDATOR_AUTORUN != false do runValidator()
