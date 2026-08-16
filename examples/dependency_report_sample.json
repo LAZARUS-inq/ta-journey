@@ -1,0 +1,161 @@
+{
+  "scan_path": "/Game",
+  "summary": {
+    "assets": 9,
+    "edges": 9,
+    "unused": 3,
+    "missing": 1,
+    "cycles": 1
+  },
+  "by_class": {
+    "World": 1,
+    "StaticMesh": 1,
+    "Material": 2,
+    "Texture2D": 3,
+    "MaterialInstanceConstant": 2
+  },
+  "unused": [
+    {
+      "package": "/Game/Textures/T_Old_D",
+      "name": "T_Old_D",
+      "class": "Texture2D",
+      "path": "/Game/Textures/T_Old_D"
+    },
+    {
+      "package": "/Game/Materials/MI_Ping",
+      "name": "MI_Ping",
+      "class": "MaterialInstanceConstant",
+      "path": "/Game/Materials/MI_Ping"
+    },
+    {
+      "package": "/Game/Materials/MI_Pong",
+      "name": "MI_Pong",
+      "class": "MaterialInstanceConstant",
+      "path": "/Game/Materials/MI_Pong"
+    }
+  ],
+  "missing": [
+    {
+      "from": "/Game/Materials/M_Crate",
+      "to": "/Game/Textures/T_Broken_D",
+      "kind": "hard"
+    }
+  ],
+  "cycles": [
+    {
+      "packages": [
+        "/Game/Materials/MI_Ping",
+        "/Game/Materials/MI_Pong",
+        "/Game/Materials/MI_Ping"
+      ]
+    }
+  ],
+  "most_referenced": [
+    {
+      "package": "/Game/Textures/T_Crate_D",
+      "name": "T_Crate_D",
+      "class": "Texture2D",
+      "path": "/Game/Textures/T_Crate_D",
+      "referencers": 2
+    },
+    {
+      "package": "/Game/Materials/MI_Ping",
+      "name": "MI_Ping",
+      "class": "MaterialInstanceConstant",
+      "path": "/Game/Materials/MI_Ping",
+      "referencers": 1
+    },
+    {
+      "package": "/Game/Materials/MI_Pong",
+      "name": "MI_Pong",
+      "class": "MaterialInstanceConstant",
+      "path": "/Game/Materials/MI_Pong",
+      "referencers": 1
+    },
+    {
+      "package": "/Game/Materials/M_Crate",
+      "name": "M_Crate",
+      "class": "Material",
+      "path": "/Game/Materials/M_Crate",
+      "referencers": 1
+    },
+    {
+      "package": "/Game/Materials/M_DecalDirt",
+      "name": "M_DecalDirt",
+      "class": "Material",
+      "path": "/Game/Materials/M_DecalDirt",
+      "referencers": 1
+    }
+  ],
+  "heaviest_assets": [
+    {
+      "package": "/Game/Materials/M_Crate",
+      "name": "M_Crate",
+      "class": "Material",
+      "path": "/Game/Materials/M_Crate",
+      "dependencies": 3
+    },
+    {
+      "package": "/Game/Maps/Lvl_Hangar",
+      "name": "Lvl_Hangar",
+      "class": "World",
+      "path": "/Game/Maps/Lvl_Hangar",
+      "dependencies": 2
+    },
+    {
+      "package": "/Game/Materials/MI_Ping",
+      "name": "MI_Ping",
+      "class": "MaterialInstanceConstant",
+      "path": "/Game/Materials/MI_Ping",
+      "dependencies": 1
+    },
+    {
+      "package": "/Game/Materials/MI_Pong",
+      "name": "MI_Pong",
+      "class": "MaterialInstanceConstant",
+      "path": "/Game/Materials/MI_Pong",
+      "dependencies": 1
+    },
+    {
+      "package": "/Game/Materials/M_DecalDirt",
+      "name": "M_DecalDirt",
+      "class": "Material",
+      "path": "/Game/Materials/M_DecalDirt",
+      "dependencies": 1
+    }
+  ],
+  "query": {
+    "package": "/Game/Textures/T_Crate_D",
+    "known": true,
+    "node": {
+      "package": "/Game/Textures/T_Crate_D",
+      "name": "T_Crate_D",
+      "class": "Texture2D",
+      "path": "/Game/Textures/T_Crate_D"
+    },
+    "dependencies": [],
+    "referencers": [
+      {
+        "from": "/Game/Materials/M_Crate",
+        "kind": "hard"
+      },
+      {
+        "from": "/Game/Materials/M_DecalDirt",
+        "kind": "hard"
+      }
+    ]
+  },
+  "meta": {
+    "timestamp": "2026-08-16T12:00:00",
+    "note": "Synthetic sample so GitHub visitors can read a report without UE5.",
+    "include_soft": true,
+    "root_classes": [
+      "World",
+      "WorldPartition",
+      "Level",
+      "LevelSequence",
+      "MapBuildDataRegistry",
+      "ExternalDataLayerAsset"
+    ]
+  }
+}

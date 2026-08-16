@@ -14,17 +14,19 @@ This repository is a public journal of pipeline tools, MAXScript, Unreal Python,
 
 | Folder | Contents |
 |---|---|
-| [`maxscript/`](maxscript/) | Pre-export tools for 3ds Max (rename, pivot, FBX batch, mesh validator) |
-| [`python/`](python/) | Naming pipeline, FBX folder scanner, pymxs, UE5 Editor scripts |
+| [`maxscript/`](maxscript/) | Pre-export tools + `ta_toolbox.ms` UI for 3ds Max |
+| [`python/`](python/) | Naming pipeline, FBX scanner, pymxs, UE5 Editor scripts + dependency graph |
 | [`shaders/`](shaders/) | Preview GIFs of UE5 materials, Niagara, and LOD visualization |
+| [`examples/`](examples/) | Sample JSON reports (readable without Unreal) |
 | [`tests/`](tests/) | Vanilla Python checks (no Max / UE5 required) |
 | `reports/` | JSON/TXT reports written at runtime (gitignored) |
 
 ```
 ta-journey/
-├── maxscript/
-├── python/
+├── maxscript/        # including ta_toolbox.ms
+├── python/           # including asset_dependency_checker.py
 ├── shaders/
+├── examples/
 ├── tests/
 └── reports/          # created automatically
 ```
@@ -56,8 +58,14 @@ Two-stage mesh validation. Max catches export problems; Unreal catches import/se
 
 ```mermaid
 flowchart LR
-  A["3ds Max<br/>mesh_validator.ms"] -->|FBX| B["UE5 Editor<br/>mesh_validator.py"]
-  B --> C["JSON report<br/>reports/"]
+  A["3ds Max toolbox<br/>ta_toolbox.ms"] --> B["mesh_validator.ms"]
+  B -->|FBX| C["UE5 TA Journey menu"]
+  C --> D["mesh_validator.py"]
+  C --> E["material_audit.py"]
+  C --> F["asset_dependency_checker.py"]
+  D --> G["JSON reports/"]
+  E --> G
+  F --> G
 ```
 
 | Stage | Tool | Checks | Auto-fix (opt-in) |
@@ -66,6 +74,56 @@ flowchart LR
 | Post-import | `python/mesh_validator.py` | `SM_` name, LOD count, **lightmap UV1+**, collision (primitives or complex), triangle cap, Nanite on low-poly | Naming only |
 
 Dry-run is the default. Read the report, then set `MODE = "fix"` (Max) or `MODE = "fix"` (UE5) at the top of the file.
+
+---
+
+## Flagship: Asset Dependency Checker
+
+Naming tools catch `T_` vs `M_`. They do **not** catch a texture nobody uses, a material pointing at a deleted asset, or two instances parenting each other. That is what a TA is hired to find before a build.
+
+`python/asset_dependency_checker.py` walks `/Game` through **AssetRegistry** (no need to load every asset), builds a package graph, and reports:
+
+| Finding | Meaning |
+|---|---|
+| **Unused** | Not reachable from a map / level sequence. Cyclic islands (A↔B with no level ref) count as unused. |
+| **Missing** | A `/Game/...` package is referenced but not in the registry (redirector, bad merge, deleted asset). |
+| **Hard-ref cycles** | A → B → A load loop (typical: instance parents). |
+| **Hubs** | Most-referenced packages — shared textures/materials. |
+| **Heaviest** | Packages with the most outgoing dependencies. |
+| **Query** | Set `QUERY_PACKAGE` to answer “who uses `T_Crate_D`?” |
+
+The graph math lives in `python/dependency_graph.py` with **no Unreal import**, so it is unit-tested in CI. A full report can be read without the editor: [`examples/dependency_report_sample.json`](examples/dependency_report_sample.json).
+
+```mermaid
+flowchart TD
+  Map["Lvl_Hangar World"] -->|hard| Mesh["SM_Crate"]
+  Map -->|soft| Decal["M_DecalDirt"]
+  Mesh --> Mat["M_Crate"]
+  Mat --> Albedo["T_Crate_D"]
+  Mat --> Normal["T_Crate_N"]
+  Mat -.->|missing| Broken["T_Broken_D"]
+  Decal --> Albedo
+  Ping["MI_Ping"] <-->|cycle| Pong["MI_Pong"]
+  Orphan["T_Old_D unused"]
+```
+
+This tool **never deletes**. It only writes JSON.
+
+---
+
+## Editor UIs
+
+Loose scripts look like homework. These two wrap the same tools as a studio shelf.
+
+**3ds Max** — *Scripting → Run Script → `maxscript/ta_toolbox.ms`*
+
+- Rename `SM_*`, center pivot, validate dry / fix (fix asks before ResetXForm), batch FBX export
+
+**Unreal Engine 5** — *Tools → Execute Python Script → `python/register_ta_menu.py`* once per session
+
+Menu **TA Journey**: Texture Checker · Material Audit · Mesh Validator · Asset Dependency Checker
+
+To have the menu on editor startup, copy `python/init_unreal.py` to `<Project>/Content/Python/init_unreal.py` (and keep this `python/` folder on Unreal’s Python path).
 
 ---
 
@@ -101,7 +159,7 @@ Mutating tools default to **report-only**. Flip `DRY_RUN` / `MODE` / `FIX_NAMING
 Vanilla Python checks (no Max / UE5):
 
 ```bash
-python tests/test_tools.py
+python -m unittest discover -s tests -v
 ```
 
 ### MAXScript — *Scripting → Run Script*
@@ -112,6 +170,7 @@ python tests/test_tools.py
 | `reset_pivot.ms` | `CenterPivot` on selection (bbox center — modeling helper, not the export-origin check) |
 | `batch_export.ms` | One FBX per selected object; folder picker; restores selection |
 | `mesh_validator.ms` | Pre-export checks above. `MODE = "dry"` (default) or `"fix"`. `CHECK_SELECTED = true` limits to the selection |
+| `ta_toolbox.ms` | One dialog that runs the scripts above (fix mode confirms first) |
 
 ### Python — vanilla / pymxs / UE5 Editor (*Tools → Execute Python Script*)
 
@@ -123,6 +182,9 @@ python tests/test_tools.py
 | `texture_checker.py` | UE5 | All `Texture2D` under `/Game/`: `T_` prefix + suffix table, optional rename |
 | `material_audit.py` | UE5 | Materials + instances: broken textures, empty graphs, `M_` / `MI_` names, duplicates. `FIX_NAMING = False` by default |
 | `mesh_validator.py` | UE5 | StaticMesh post-import checks above. `SCAN_PATH = "/Game"`, `MAX_TRIS = 50000`, `NANITE_TRIS = 5000` |
+| `dependency_graph.py` | Python 3 | Package graph: unused / missing / cycles / hubs (no Unreal) |
+| `asset_dependency_checker.py` | UE5 | AssetRegistry → graph → JSON. Report-only. Optional `QUERY_PACKAGE` |
+| `register_ta_menu.py` | UE5 | Adds **TA Journey** to the Level Editor menu |
 
 Narrow UE5 scans with `SCAN_PATH` (for example `/Game/Materials`) on large projects.
 
@@ -208,7 +270,8 @@ Narrow UE5 scans with `SCAN_PATH` (for example `/Game/Materials`) on large proje
 - [x] `mesh_validator.ms` + `mesh_validator.py` — two-stage mesh validation (3ds Max + UE5)
 - [x] Destruction Material — dynamic crack shader + Blueprint Timeline + MPC
 - [x] ArtStation profile with 12+ projects
-- [ ] Asset Dependency Checker — UE5 Python dependency graph via AssetRegistry
+- [x] `asset_dependency_checker.py` — UE5 Python dependency graph via AssetRegistry
+- [x] `ta_toolbox.ms` + UE5 **TA Journey** menu
 - [ ] First job applications
 
 ---
