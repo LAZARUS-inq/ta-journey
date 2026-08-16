@@ -1,108 +1,145 @@
 # texture_checker.py
 # UE5 Texture Naming Convention Validator & Auto-Fix Tool
-# Scans all Texture2D assets in /Game/ folder, checks for T_ prefix,
-# and optionally renames non-compliant textures automatically.
+# Scans Texture2D assets under /Game/, checks T_ prefix and common suffixes,
+# and optionally renames non-compliant textures.
 #
 # Usage:
 #   DRY_RUN = True  → Report only, no changes made
-#   DRY_RUN = False → Apply fixes, rename assets in-engine
+#   DRY_RUN = False → Apply prefix fixes in-engine
 #
 # Run inside UE5: Tools → Execute Python Script
-# Report saved to: texture_report.json
 #
 # Author: LAZARUS-inq
 # Part of TA learning journey
 
-import unreal
 import json
+import os
+import re
+
+import unreal
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 
-DRY_RUN = True          # Set to False to apply renames
-REPORT_PATH = "E:\\PythonScripts\\texture_report.json"
-
-# ── SCAN ──────────────────────────────────────────────────────────────────────
-
-asset_registry = unreal.AssetRegistryHelpers.get_asset_registry()
-assets = asset_registry.get_assets_by_class(
-    unreal.TopLevelAssetPath("/Script/Engine", "Texture2D")
+DRY_RUN = True
+SCAN_PATH = "/Game"
+CHECK_SUFFIXES = True
+VALID_SUFFIXES = (
+    "_D", "_N", "_S", "_M", "_E", "_H",
+    "_ORM", "_MRA", "_RMA", "_ARM",
+    "_Mask", "_ORMH",
 )
 
-valid = []
-invalid = []
-renamed = []
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPORT_PATH = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "reports", "texture_report.json"))
 
-for asset in assets:
-    path = str(asset.package_path)
+KNOWN_PREFIX_RE = re.compile(r"^(T_|M_|MI_|SM_|SK_|MF_|MPC_)")
 
-    # Skip engine/plugin textures — only check project assets
-    if not path.startswith("/Game/"):
-        continue
 
-    name = str(asset.asset_name)
-    issues = []
+def log(msg):
+    unreal.log(f"[TextureChecker] {msg}")
 
-    # ── NAMING CHECK ──────────────────────────────────────────────────────────
-    if not name.startswith("T_"):
-        issues.append("BAD NAME — missing T_ prefix")
-        new_name = f"T_{name}"
 
-        if not DRY_RUN:
-            unreal.EditorUtilityLibrary.rename_asset(
-                asset.get_asset(), new_name
-            )
-            status = "RENAMED"
-        else:
+def suggested_texture_name(name):
+    clean = KNOWN_PREFIX_RE.sub("", name)
+    return f"T_{clean}" if not clean.startswith("T_") else clean
+
+
+def suffix_ok(name):
+    if not CHECK_SUFFIXES:
+        return True
+    return any(name.endswith(suffix) for suffix in VALID_SUFFIXES)
+
+
+def scan_textures(scan_path, dry_run):
+    asset_registry = unreal.AssetRegistryHelpers.get_asset_registry()
+    assets = asset_registry.get_assets_by_class(
+        unreal.TopLevelAssetPath("/Script/Engine", "Texture2D")
+    )
+
+    valid = []
+    invalid = []
+    renamed = []
+
+    for asset in assets:
+        path = str(asset.package_path)
+        if not path.startswith(scan_path):
+            continue
+
+        name = str(asset.asset_name)
+        issues = []
+        new_name = name
+
+        if not name.startswith("T_"):
+            issues.append("BAD NAME — missing T_ prefix")
+            new_name = suggested_texture_name(name)
             status = "SUGGESTED"
+            if not dry_run:
+                try:
+                    unreal.EditorUtilityLibrary.rename_asset(asset.get_asset(), new_name)
+                    status = "RENAMED"
+                except Exception as exc:
+                    status = "FAILED"
+                    issues.append(f"RENAME FAILED: {exc}")
+            renamed.append({
+                "old": name,
+                "new": new_name,
+                "path": path,
+                "status": status,
+            })
 
-        renamed.append({
-            "old": name,
-            "new": new_name,
-            "path": str(path),
-            "status": status
-        })
+        if not suffix_ok(name):
+            issues.append(
+                "SUFFIX — expected one of " + ", ".join(VALID_SUFFIXES)
+            )
 
-    entry = {"name": name, "path": str(path), "issues": issues}
-    if issues:
-        invalid.append(entry)
+        entry = {"name": name, "path": path, "issues": issues}
+        if issues:
+            invalid.append(entry)
+        else:
+            valid.append(entry)
+
+    return valid, invalid, renamed
+
+
+def save_report(report, report_path):
+    os.makedirs(os.path.dirname(report_path) or ".", exist_ok=True)
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=4)
+    log(f"Report saved to: {report_path}")
+
+
+def run(scan_path=SCAN_PATH, dry_run=DRY_RUN, report_path=REPORT_PATH):
+    valid, invalid, renamed = scan_textures(scan_path, dry_run)
+    mode = "DRY RUN" if dry_run else "FIX MODE"
+
+    log(f"=== TEXTURE CHECKER REPORT [{mode}] ===")
+    log(f"Total scanned : {len(valid) + len(invalid)}")
+    log(f"Valid         : {len(valid)}")
+    log(f"Invalid       : {len(invalid)}")
+
+    if renamed:
+        log("--- Renames ---")
+        for item in renamed:
+            log(f"  [{item['status']}] {item['old']} → {item['new']}")
     else:
-        valid.append(entry)
+        log("No prefix renames required.")
 
-# ── REPORT ────────────────────────────────────────────────────────────────────
+    report = {
+        "mode": mode,
+        "scan_path": scan_path,
+        "summary": {
+            "total": len(valid) + len(invalid),
+            "valid": len(valid),
+            "invalid": len(invalid),
+            "renamed": len(renamed),
+        },
+        "valid": valid,
+        "invalid": invalid,
+        "renames": renamed,
+    }
+    save_report(report, report_path)
+    return report
 
-mode = "DRY RUN" if DRY_RUN else "FIX MODE"
 
-print(f"=== TEXTURE CHECKER REPORT [{mode}] ===")
-print(f"Total scanned : {len(valid) + len(invalid)}")
-print(f"Valid         : {len(valid)}")
-print(f"Invalid       : {len(invalid)}")
-print("")
-
-if renamed:
-    print("--- Renames ---")
-    for r in renamed:
-        print(f"  [{r['status']}] {r['old']} → {r['new']}")
-else:
-    print("All textures are correctly named.")
-
-print("==============================")
-
-# ── SAVE JSON ─────────────────────────────────────────────────────────────────
-
-report = {
-    "mode": mode,
-    "summary": {
-        "total": len(valid) + len(invalid),
-        "valid": len(valid),
-        "invalid": len(invalid),
-        "renamed": len(renamed)
-    },
-    "valid": valid,
-    "invalid": invalid,
-    "renames": renamed
-}
-
-with open(REPORT_PATH, "w") as f:
-    json.dump(report, f, indent=4)
-
-print(f"Report saved to: {REPORT_PATH}")
+if __name__ == "__main__":
+    run()

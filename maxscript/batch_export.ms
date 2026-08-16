@@ -11,18 +11,36 @@ if selectedObjects.count == 0 then
 )
 else
 (
-    exportFolder = "C:\\Exports\\"
-    if not doesFileExist exportFolder then makeDir exportFolder
-
-    originalSelection = getCurrentSelection()
-
-    for obj in selectedObjects do
+    exportFolder = getSavePath caption:"Select FBX export folder"
+    if exportFolder == undefined then
     (
-        select obj
-        filePath = exportFolder + obj.name + ".fbx"
-        exportFile filePath #noPrompt selectedOnly:true using:FBXEXP
+        format "ERROR: Export cancelled — no folder selected.\n"
     )
+    else
+    (
+        if exportFolder[exportFolder.count] != "\\" and exportFolder[exportFolder.count] != "/" then
+            exportFolder += "\\"
 
-    select originalSelection
-    format "SUCCESS: Exported % files to %\n" selectedObjects.count exportFolder
+        originalSelection = getCurrentSelection()
+        exported = 0
+
+        for obj in selectedObjects do
+        (
+            select obj
+            filePath = exportFolder + obj.name + ".fbx"
+            result = exportFile filePath #noPrompt selectedOnly:true using:FBXEXP
+            if result then
+            (
+                exported += 1
+                format "Exported: %\n" filePath
+            )
+            else
+            (
+                format "FAILED: %\n" filePath
+            )
+        )
+
+        select originalSelection
+        format "SUCCESS: Exported % / % files to %\n" exported selectedObjects.count exportFolder
+    )
 )

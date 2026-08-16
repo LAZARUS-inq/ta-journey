@@ -36,10 +36,16 @@
 -- ================================================================================
 
 -- ─── Settings ──────────────────────────────────────────────────────────────────
-global MODE           = "fix"      -- "dry" = report only | "fix" = auto-fix
+global MODE           = "dry"      -- "dry" = report only | "fix" = auto-fix
 global MAX_TRIS       = 50000
 global CHECK_SELECTED = true
-global LOG_PATH       = "C:/UE5_Reports/"
+
+scriptFile = getThisScriptFilename()
+if scriptFile == undefined or scriptFile == "" then scriptFile = getSourceFileName()
+if scriptFile == undefined or scriptFile == "" then
+    global LOG_PATH = (GetDir #temp) + @"\ta-journey\"
+else
+    global LOG_PATH = (getFilenamePath scriptFile) + @"..\reports\"
 
 -- ─── Logging ───────────────────────────────────────────────────────────────────
 global validationLog = #()
@@ -50,20 +56,30 @@ fn logMsg msg = (
 )
 
 -- ─── Fix: Naming ───────────────────────────────────────────────────────────────
+fn stripKnownPrefix name =
+(
+    local prefixes = #("SM_", "SK_", "ENV_", "T_", "M_", "MI_")
+    for p in prefixes do
+    (
+        if matchPattern name pattern:(p + "*") then
+        (
+            return substring name (p.count + 1) (name.count - p.count)
+        )
+    )
+    name
+)
+
 fn fixNaming obj = (
     local oldName = obj.name
-    local newName = "SM_" + oldName
+    local newName = "SM_" + (stripKnownPrefix oldName)
     obj.name = newName
     logMsg ("  [FIXED] Naming: '" + oldName + "' -> '" + newName + "'")
 )
 
--- ─── Fix: Pivot ────────────────────────────────────────────────────────────────
+-- ─── Fix: Pivot (must match the origin check below) ────────────────────────────
 fn fixPivot obj = (
-    local bbMin = obj.min
-    local bbMax = obj.max
-    local center = (bbMin + bbMax) / 2.0
-    obj.pivot = center
-    logMsg ("  [FIXED] Pivot: moved to bounding box center (" + (center.x as string) + ", " + (center.y as string) + ", " + (center.z as string) + ")")
+    obj.pivot = [0, 0, 0]
+    logMsg "  [FIXED] Pivot: moved to world origin (0, 0, 0)"
 )
 
 -- ─── Fix: Scale ────────────────────────────────────────────────────────────────
@@ -195,7 +211,7 @@ fn validateObject obj = (
 fn saveReport = (
     makeDir LOG_PATH
 
-    local timestamp = (localTime as string)
+    local timestamp = localTime as string
     local filename  = LOG_PATH + "mesh_validator_report.txt"
 
     local f = openFile filename mode:"w"

@@ -4,39 +4,51 @@
 # Author: LAZARUS-inq
 # Part of TA learning journey
 
-import pymxs
-import re
 import json
 import os
+import re
+
+import pymxs
 
 rt = pymxs.runtime
 
-def process_selected(prefix="SM", report_path="C:\\Reports\\report.json"):
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_REPORT = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "reports", "maxscript_report.json"))
+PREFIX_RE = re.compile(r"^(SM_|ENV_|SK_)")
+SUFFIX_RE = re.compile(r"[_\d]+$")
+
+
+def process_selected(prefix="SM", report_path=DEFAULT_REPORT):
     selected = rt.getCurrentSelection()
 
     if len(selected) == 0:
         print("ERROR: Nothing selected.")
-        return
+        return None
 
     renamed = []
     for i, obj in enumerate(selected):
         old_name = obj.name
-        clean_name = re.sub(r'^(SM_|ENV_)', '', old_name)
-        clean_name = re.sub(r'[_\d]+$', '', clean_name)
+        clean_name = PREFIX_RE.sub("", old_name)
+        clean_name = SUFFIX_RE.sub("", clean_name) or old_name
         obj.name = f"{prefix}_{clean_name}_{i+1:03d}"
         renamed.append(obj.name)
         print(f"Renamed: {old_name} ? {obj.name}")
 
     print(f"Total: {len(selected)} objects renamed.")
 
-    os.makedirs(os.path.dirname(report_path), exist_ok=True)
+    report_dir = os.path.dirname(report_path)
+    if report_dir:
+        os.makedirs(report_dir, exist_ok=True)
     report = {
         "total": len(renamed),
         "prefix": prefix,
-        "objects": renamed
+        "objects": renamed,
     }
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=4)
     print(f"Report saved to: {report_path}")
+    return renamed
 
-process_selected()
+
+if __name__ == "__main__":
+    process_selected()

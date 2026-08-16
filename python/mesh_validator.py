@@ -40,13 +40,15 @@
 import unreal
 import json
 import os
+import re
 from datetime import datetime
 
 # ─── Settings ──────────────────────────────────────────────────────────────────
 
 MODE        = "dry"           # "dry" = report only | "fix" = auto-fix naming
 SCAN_PATH   = "/Game"
-REPORT_PATH = "C:/UE5_Reports"
+SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
+REPORT_PATH = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "reports"))
 MAX_TRIS    = 50000
 NANITE_TRIS = 5000            # below this, Nanite warning triggers
 
@@ -102,7 +104,6 @@ def check_naming(asset_data) -> dict:
 
     suggested = name
     if not ok:
-        import re
         clean     = re.sub(r"^(SM_|SK_|T_|M_|MI_)", "", name)
         suggested = "SM_" + clean
 
@@ -121,9 +122,10 @@ def check_lod(mesh: unreal.StaticMesh) -> dict:
 # ─── Check: Lightmap UV ────────────────────────────────────────────────────────
 
 def check_lightmap_uv(mesh: unreal.StaticMesh) -> dict:
+    """Lightmaps should use UV1+; UV0 is reserved for textures."""
     try:
         lightmap_index = mesh.get_editor_property("lightmap_coordinate_index")
-        ok = lightmap_index >= 0
+        ok = lightmap_index >= 1
         return {"ok": ok, "channel": lightmap_index}
     except Exception as e:
         return {"ok": False, "channel": -1, "error": str(e)}
@@ -132,20 +134,21 @@ def check_lightmap_uv(mesh: unreal.StaticMesh) -> dict:
 
 def check_collision(mesh: unreal.StaticMesh) -> dict:
     try:
-        body_setup  = mesh.get_editor_property("body_setup")
-        has_complex = mesh.get_editor_property("generate_mesh_distance_field")
+        body_setup = mesh.get_editor_property("body_setup")
+        if body_setup is None:
+            return {"ok": False, "shapes": 0, "complex": False}
 
-        if body_setup is not None:
-            agg = body_setup.get_editor_property("agg_geom")
-            sphere_count = len(agg.get_editor_property("sphere_elems"))
-            box_count    = len(agg.get_editor_property("box_elems"))
-            capsule_count= len(agg.get_editor_property("sphyl_elems"))
-            convex_count = len(agg.get_editor_property("convex_elems"))
-            total = sphere_count + box_count + capsule_count + convex_count
-            ok = total > 0
-            return {"ok": ok, "shapes": total}
+        collision_trace = str(body_setup.get_editor_property("collision_trace_flag"))
+        uses_complex = "CTF_USE_COMPLEX" in collision_trace
 
-        return {"ok": False, "shapes": 0}
+        agg = body_setup.get_editor_property("agg_geom")
+        sphere_count = len(agg.get_editor_property("sphere_elems"))
+        box_count = len(agg.get_editor_property("box_elems"))
+        capsule_count = len(agg.get_editor_property("sphyl_elems"))
+        convex_count = len(agg.get_editor_property("convex_elems"))
+        total = sphere_count + box_count + capsule_count + convex_count
+        ok = total > 0 or uses_complex
+        return {"ok": ok, "shapes": total, "complex": uses_complex}
     except Exception as e:
         return {"ok": False, "shapes": 0, "error": str(e)}
 
@@ -240,14 +243,17 @@ def validate_asset(asset_data) -> dict:
         log(f"  [OK] Lightmap UV channel: {lightmap['channel']}")
     else:
         result["failed"] += 1
-        log_warning(f"  [FAIL] Lightmap UV: channel not set")
+        log_warning(
+            f"  [FAIL] Lightmap UV: channel {lightmap.get('channel', -1)} — expected UV1+"
+        )
 
     # Collision
     collision = check_collision(mesh)
     result["collision"] = collision
     if collision["ok"]:
         result["passed"] += 1
-        log(f"  [OK] Collision: {collision['shapes']} shape(s)")
+        log(f"  [OK] Collision: {collision['shapes']} primitive(s)"
+            + (" + complex" if collision.get("complex") else ""))
     else:
         result["failed"] += 1
         log_warning(f"  [FAIL] Collision: no collision shapes found")
